@@ -3,10 +3,14 @@
 Created on Sun Dec 27 17:11:50 2020
 
 @author: mitch
+
+To do: 
+- algemene input maken zodat iedereen in de folder dit script kan runnen
+
 """
 
 # https://codingandfun.com/scrape-yahoo-finance-using-python/
-# email: https://handsoffinvesting.com/automating-your-stock-analysis-with-python/
+
 
 
 import numpy as np 
@@ -22,20 +26,22 @@ import ssl
 import socket
 import smtplib
 
-start = datetime(2012, 1, 1)
-symbols_list = ['IBM', 'T', 'LTC', 'PFE', 'JNJ']
-#array to store prices
-symbols=[]
 
-df=pd.DataFrame();
-
+# Interesting companies
 companies = [['IBM','Technology'],['DLR','Real Estate'], ['LTC','Real Estate'], ['ABT','Health Care'], 
              ['UL','Consumer Staples'], ['T', 'Communication Services'], ['NEDAP.AS', 'Technology'], ['NSRGY','Consumer Staples'],
              ['PFE','Health Care'], ['GLPG.AS', 'Health Care'], ['PHIA.AS','Health Care'], ['GOOG','Health care'], ['DIS', 'Fun'],
              ['FSLY','Technology'], ['Alfen.AS','Energy'], ['AMZN','Combi'], ['JNJ','Health Care']] # ['GILD','Health Care']
- 
+
+# Abbreviations and start date 
+symbols=[]
+start = datetime(2012, 1, 1)
+symbols_list = ['IBM', 'T', 'LTC', 'PFE', 'JNJ']
 
 
+
+########################################################################################################################################
+df=pd.DataFrame();
 for company in companies:
     print(company)
     statistics = pd.read_html(f'https://finance.yahoo.com/quote/{company[0]}/key-statistics?p={company[0]}');
@@ -73,10 +79,11 @@ for company in companies:
                       # levered free cash flow
                       "Short % of shares outstanding":[share_Statistics[1][9]],
                       });
-    df=df.append(df1);
+    df=df.append(df1); #append dataframe
     
 df=df.reset_index(drop=True)
 
+# dataframe to floats
 df['Close_price'] = df['Close_price'].astype('float')
 df['50-day_moving average'] = df['50-day_moving average'].astype('float')
 df['200-day_moving average'] = df['200-day_moving average'].astype('float')
@@ -94,49 +101,24 @@ df['Short % of shares outstanding'] = df['Short % of shares outstanding'].str.rs
 
 df=df.sort_values(by=['P/E_ratio'], ascending=False)
 
-df.to_csv (r'C:\Users\mitch\anaconda3\Stocks\finance_sc\Stocks.csv', index = False, header=True)
+df.to_csv (r'C:\Users\mitch\anaconda3\Stocks\finance_sc\Stocks.csv', index = False, header=True)       #save dataframe to csv
 
 #Analysis = pd.read_csv(r'C:\Users\mitch\anaconda3\Stocks\finance_sc\Stocks.csv')  # Read in the ranked stocks
 
-
-#Body_of_Email = """\
-#Subject: Daily Stock Report
-#Stocks of the day:
-#""" + df.to_string(index=False) + """\
-#
-#Sincerely,
-#Your Computer"""
-
-
-#msg = email.message_from_string(Body_of_Email)
-#msg['From'] = "gwoon_mitch@live.nl"
-#msg['To'] = "mitchmolenaar@gmail.com"
-#msg['Subject'] = "Stocks"
-
-#s = smtplib.SMTP("smtp.live.com",587)
-#s.ehlo() # Hostname to send for this command defaults to the fully qualified domain name of the local host.
-#s.starttls() #Puts connection to SMTP server in TLS mode
-#s.ehlo()
-#s.login('gwoon_mitch@live.nl', 'ipod1lover3')
-
-#s.sendmail("gwoon_mitch@live.nl","mitchmolenaar@gmail.com", msg.as_string())
-
-#s.quit()
-
-
-#array to store prices
-symbols=[]
+########################################################################################################################################
+###Make covariation matrix to see dependence of stocks in the past ###
 for ticker in symbols_list:     
     r = web.DataReader(ticker, 'yahoo', start)   
     # add a symbol column   
     r['Symbol'] = ticker    
     symbols.append(r)
 # concatenate into df
-df_x = pd.concat(symbols)
-df_x = df_x.reset_index()
-df_x = df[['Date', 'Close', 'Symbol']]
-df_x.head()
-df_pivot=df_x.pivot('Date','Symbol','Close').reset_index()
+df1=df
+df1 = pd.concat(symbols)
+df1 = df1.reset_index()
+df1 = df1[['Date', 'Close', 'Symbol']]
+df1.head()
+df_pivot=df1.pivot('Date','Symbol','Close').reset_index()
 df_pivot.head()
 
 corr_df = df_pivot.corr(method='pearson')
