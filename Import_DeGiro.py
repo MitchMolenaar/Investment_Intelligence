@@ -15,7 +15,7 @@ import pandas as pd #import pandas to import excel file into pyhton
 
 #import your exported .xls file and call it trans.
 #insert your own personal paht to your xls file:
-trans = pd.read_excel (r'Your\path\to\your\xls\file\filename.xls')
+trans = pd.read_excel (r'C:\Users\ttmoo\Documents\Administratie\Privé\Github\Account.xls')
 
 #remove all rows which does not include an Order Id:
 trans.dropna(subset=['Order Id'], inplace=True)
@@ -26,5 +26,13 @@ trans.columns = ['date', 'del0', 'del1', 'product', 'ISIN', 'description',
 
 #remove colums which are unnecesary (named 'del#'):
 trans = trans[trans.columns[~trans.columns.str.contains('del')]]
+trans = trans.reset_index() #reset indices
+trans["description"]= trans["description"].str.split(" ", n = 2, expand = False) 
 
-print(trans)
+# iterate through each row and select  
+# 'Name' and 'Age' column respectively. 
+for i in range(len(trans)) : 
+    print(trans.loc[i, "product"], trans.loc[i, "description"], trans.loc[i, "value"])
+    products = trans["product"]
+    num_products = trans["description"]
+    values = trans["value"]*(-1)
