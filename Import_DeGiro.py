@@ -50,7 +50,7 @@ def simple_dashboard(your_xls_file):
     values = trans["value"]
 
     #combine products in one dataframe
-    global total #global makes it possible to return total
+    global total #global makes it possible to return variable
     total = pd.concat([products, ISIN, num_products, pric_pp, values], axis=1) 
     total.columns=["product", "isin", "number", "ini_value", "total_value"]
 
@@ -75,3 +75,6 @@ def simple_dashboard(your_xls_file):
 
 #run simple_dashboard function
 simple_dashboard(r'C:\Users\ttmoo\Documents\Administratie\Privé\Github\Account.xls')
+
+#testdf = total[total['isin'].isin(total['isin'].value_counts()[total['isin'].value_counts()>1].index)]
+#total.groupby(['isin']).get_group('NL0009690221')
