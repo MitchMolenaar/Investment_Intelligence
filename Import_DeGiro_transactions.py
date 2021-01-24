@@ -28,15 +28,15 @@ Pandas DataFrame calles 'total' with all transaction in it
 """
 
 def simple_dashboard(your_csv_file_transactions, your_csv_file_account):
-#import your exported .csv file and call it Transactions.
-#insert your own personal path to your Transactions file:
+#import your exported .csv files and call them Transactions and Account.
+#insert your own personal paths to your files:
 #simpledashboard(your_csv_file_transactions,your_csv_file_account)
     transaction =  pd.read_csv(your_csv_file_transactions) 
     account = pd.read_csv(your_csv_file_account)
     
     #remove all rows which does include an Order Id:
-    transaction.drop(['Order ID'], axis=1, inplace=True)
-    account.drop(['Order Id'], axis=1, inplace=True)
+    #transaction.drop(['Order ID'], axis=1, inplace=True)
+    #account.drop(['Order Id'], axis=1, inplace=True)
 
     #make dataframe portfolio
     portfolio=[]
@@ -55,7 +55,31 @@ def simple_dashboard(your_csv_file_transactions, your_csv_file_account):
     portfolio = pd.concat(portfolio) # put all stocks in one dataframe
     portfolio = portfolio.set_index('Stock') # set index as stock name
     
+    #creating subplots
+    fig = plt.figure(figsize=(10,5))
+    sub1 = fig.add_subplot(131)
+    sub2 = fig.add_subplot(132)
+    sub3 = fig.add_subplot(133)
+
+    #plot the data and set lables
+    sub1.barh(portfolio.index, portfolio["Current number of stocks"], height=0.75) #number of shares
+    sub2.barh(portfolio.index, (portfolio["Value of stocks"]*(-1)/portfolio["Current number of stocks"]), height=0.75) #mean purchase value
+    sub3.barh(portfolio.index, portfolio["Value of stocks"]*(-1), height=0.75) #total money invested
+    sub1.set_xlabel('# of stocks')
+    sub2.set_xlabel('GAK (€)')
+    sub2.axes.get_yaxis().set_visible(False) #hide ylabel
+    sub2.set_title('Overview of De Giro portfolio')
+    sub3.set_xlabel('Total invested (€)')
+    sub3.axes.get_yaxis().set_visible(False) #hide ylabel
+    
     return portfolio
 
-portfolio=simple_dashboard(r'C:\Users\mitch\Documents\GitHub\Investment_Intelligence\Transactions.csv', r'C:\Users\mitch\Documents\GitHub\Investment_Intelligence\account.csv')
+
+check_portfolio_of='Mitch'
+if check_portfolio_of=='Timo':
+    portfolio=simple_dashboard(r'C:\Users\ttmoo\Documents\Administratie\Privé\Github\Transactions.csv',
+                           r'C:\Users\ttmoo\Documents\Administratie\Privé\Github\Account.csv')
+if check_portfolio_of=='Mitch':
+    portfolio=simple_dashboard(r'C:\Users\mitch\Documents\GitHub\Investment_Intelligence\Transactions.csv',
+                           r'C:\Users\mitch\Documents\GitHub\Investment_Intelligence\Account.csv')
 
